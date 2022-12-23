@@ -5,11 +5,9 @@ from node import Node
 from configuration import Configuration
 
 
-def greedySearch(initial, goal, heuristic):
+def greedySearch(rows, columns, initial, goal, heuristic):
     allConfigurations = list() #vsetky vytvorene konfiguracie
-    initState = Configuration(len(initial), len(initial[0]))
-    initState.configuration = initial #ak zadava pouzivatel
-    initState.findZero() #ak zadava pouzivatel
+    initState = Configuration(rows, columns, initial)
     currentNode = Node(initState, initState.chooseHeuristic(heuristic, goal)) #korenovy uzol
 
     generatedNotExpandedNodes = PriorityQueue()
@@ -46,28 +44,29 @@ def greedySearch(initial, goal, heuristic):
 
 def convertInputIntoArray(str, rows, columns):
     state = []
-    for r in range(0,rows):
+    for r in range(0, rows):
         state.append([])
-        for c in range(0,columns):
+        for c in range(0, columns):
             state[r].append(int(str[r*columns+c]))
     return state
         
 
 def main():
     filename = "./tests/3x3.txt"
+    # filename = input("Enter test file name: ")
+    # filepath = "./tests/" + filename
     name = os.path.basename(filename)
-    name = name.split(".", 1)
+    name = name.split(".")
     name = name[0].split("x")
     rows = int(name[0])
     columns = int(name[1])
-
-    repeats = 0
 
     with open(filename) as file:
         while(line := file.readline().rstrip()):
             (initial, goal) = line.split("_")
             initialState = convertInputIntoArray(initial, rows, columns)
             goalState = convertInputIntoArray(goal, rows, columns)
+
             print("INITIAL STATE:")
             for row in range(0, rows): 
                 print(*initialState[row])
@@ -76,12 +75,12 @@ def main():
                 print(*goalState[row])
 
             t1 = timer()
-            res = greedySearch(initialState, goalState, 2)#2 pre heuristiku_2, 1 je pre heuristiku_1
+            res = greedySearch(rows, columns, initialState, goalState, 2)#2 pre heuristiku_2, 1 je pre heuristiku_1
             t2 = timer()
             print("CAS:")
             print(t2-t1)
+
             if res is not None:
-                repeats += 1
                 print("VYSLEDOK:")
                 res.state.printConfiguration()
                 print("HLBKA RIESENIA")
@@ -96,7 +95,6 @@ def main():
             else:
                 print("unsolvable")
      
-            #print(repeats)
             
 main()
     

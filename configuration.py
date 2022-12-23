@@ -1,16 +1,20 @@
 class Configuration:
 
-    def __init__(self, rows, columns):
+    def __init__(self, rows, columns, configuration = None):
         self.rows = rows
         self.columns = columns
-        self.configuration = []
-        count = 0
-        for row in range(0, rows): #preddefinovana pociatocna konfiguracia, na testovanie
-            self.configuration.append([])
-            for column in range(0, columns):
-                self.configuration[row].append(count)
-                count += 1
-        self.zero = (0,0)
+        self.configuration = configuration
+        if not configuration:
+            print("in not")
+            self.configuration = []
+            for r in range(0, rows): #preddefinovana pociatocna konfiguracia, na testovanie
+                self.configuration.append([])
+                for c in range(0, columns):
+                    self.configuration[r].append(r*c+c)
+            self.zero = (0,0)
+        else:
+            print("in else")
+            self.findZero()
 
 
     def findZero(self): #vyhlada suradnice medzery, ak sa vstup zadaval manualne
