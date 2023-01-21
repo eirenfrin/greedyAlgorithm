@@ -5,7 +5,6 @@ class Configuration:
         self.columns = columns
         self.configuration = configuration
         if not configuration:
-            print("in not")
             self.configuration = []
             for r in range(0, rows): #preddefinovana pociatocna konfiguracia, na testovanie
                 self.configuration.append([])
@@ -13,7 +12,6 @@ class Configuration:
                     self.configuration[r].append(r*c+c)
             self.zero = (0,0)
         else:
-            print("in else")
             self.findZero()
 
 

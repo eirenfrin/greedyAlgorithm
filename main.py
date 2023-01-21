@@ -17,12 +17,10 @@ def greedySearch(rows, columns, initial, goal, heuristic):
     #hlavny cyklus
     while True:
         if generatedNotExpandedNodes.empty(): #uz nie su nerozvite uzly, riesenie neexistuje
-            return None
+            return (None, None)
            
         if currentNode.foundGoal(goal): #nasiel sa cielovy stav
-            print("vygenerovanych uzlov:")
-            print(generatedNotExpandedNodes.qsize())
-            return currentNode
+            return (currentNode, generatedNotExpandedNodes.qsize())
         
         children = currentNode.generateChildren(heuristic, goal) #vygeneruje potomkov aktualneho uzla
         children.sort(key=lambda x: x.heuristic) #a usporiada ich vo vzostupnom poradi
@@ -33,7 +31,7 @@ def greedySearch(rows, columns, initial, goal, heuristic):
                 onlyNewNodes.append(children[c])
 
         if len(onlyNewNodes) == 0: #ak nevznikli ziadne nove konfiguracie
-            currentNode = generatedNotExpandedNodes.get()[1] #vyberieme prvy uzol z prioritneho radu
+            currentNode = generatedNotExpandedNodes.get()[1] #vyberieme prvy uzol z prioritneho radu 
         else: #ak vznikla aspon jedna nova konfiguracia
             currentNode = onlyNewNodes[0] #uzol obsahujuci konfiguraciu s najmensou heuristickou hodnotou budeme v nasledujucom cykle rozvijat
             allConfigurations.append(currentNode.state.configuration) #prida aktualnu konfiguraciu do zoznamu vsetkych konfiguracii
@@ -49,17 +47,18 @@ def convertInputIntoArray(str, rows, columns):
         for c in range(0, columns):
             state[r].append(int(str[r*columns+c]))
     return state
-        
+   
 
 def main():
     filename = "./tests/3x3.txt"
-    # filename = input("Enter test file name: ")
-    # filepath = "./tests/" + filename
     name = os.path.basename(filename)
     name = name.split(".")
     name = name[0].split("x")
     rows = int(name[0])
     columns = int(name[1])
+
+    sumNodesGenerated = 0
+    count = 0
 
     with open(filename) as file:
         while(line := file.readline().rstrip()):
@@ -75,26 +74,29 @@ def main():
                 print(*goalState[row])
 
             t1 = timer()
-            res = greedySearch(rows, columns, initialState, goalState, 2)#2 pre heuristiku_2, 1 je pre heuristiku_1
+            res, nodesGenerated = greedySearch(rows, columns, initialState, goalState, 1)#2 pre heuristiku_2, 1 je pre heuristiku_1
             t2 = timer()
-            print("CAS:")
+            print("time elapsed, s:")
             print(t2-t1)
 
             if res is not None:
-                print("VYSLEDOK:")
+                print("RESULT:")
                 res.state.printConfiguration()
-                print("HLBKA RIESENIA")
+                print("DEPTH OF SOLUTION")
                 print(res.depth)
                 path = ""
                 while res is not None:
                     path += res.operator
                     res = res.parent
                 path = path[::-1]
-                print("CESTA:")
+                print("PATH:")
                 print(path)
+                sumNodesGenerated += nodesGenerated
+                count += 1
             else:
                 print("unsolvable")
-     
-            
+            print("------------------------------------")
+    print("Average generated unexpanded node count: ", sumNodesGenerated/count)
+      
 main()
     
